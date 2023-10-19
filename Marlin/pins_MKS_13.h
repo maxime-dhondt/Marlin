@@ -53,6 +53,9 @@
 
 #include "pins_RAMPS.h"
 
+#undef FIL_RUNOUT_PIN
+#define FIL_RUNOUT_PIN 19
+
 //
 // LCD / Controller
 //
