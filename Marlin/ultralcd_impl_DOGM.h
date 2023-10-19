@@ -55,6 +55,10 @@
 #include "dogm_bitmaps.h"
 #include "utility.h"
 #include "duration_t.h"
+#include "Configuration.h"
+ 
+int nb_couche=0; //numero de la couche en cours
+float z_en_cours; // position Z en cours
 
 #include <U8glib.h>
 
@@ -481,7 +485,7 @@ inline void lcd_implementation_status_message(const bool blink) {
   #endif
 }
 
-//#define DOGM_SD_PERCENT
+#define DOGM_SD_PERCENT
 
 static void lcd_implementation_status_screen() {
 
@@ -698,7 +702,58 @@ static void lcd_implementation_status_screen() {
     }
   }
 
-  //
+//Custom printScreen routine couche//////////////////////////////////////////////////////////////////////////////////////////
+   if (card.isFileOpen()){ //si on est en train d'imprimer depuis la SD
+    if (z_en_cours > current_position[Z_AXIS]) // test si extrudeur est redescendu
+      {
+          nb_couche = 1; // impression première couche
+          z_en_cours = current_position[Z_AXIS];
+      }
+      
+      // test du changement de niveau de la couche
+      if (z_en_cours != current_position[Z_AXIS])
+      {
+          nb_couche++;// incrementation du nombre de couche
+          z_en_cours = current_position[Z_AXIS];
+      } 
+      u8g.drawBox(42,3,5,1);
+      u8g.drawBox(41,3,7,4);
+      u8g.drawBox(42,7,5,1);
+      u8g.drawBox(43,8,3,1);
+      u8g.drawBox(44,9,1,1);
+      u8g.drawBox(37,10,7,1);
+      u8g.drawBox(37,12,15,1);
+      u8g.drawBox(37,14,15,1);
+      u8g.drawBox(37,16,15,1);
+  
+      if (nb_couche < 10)
+        u8g.setPrintPos(42, 27);
+      if (nb_couche >= 10 && nb_couche < 100)
+        u8g.setPrintPos(38, 27);
+      if (nb_couche >= 100 && nb_couche < 1000)
+        u8g.setPrintPos(36, 27);
+      if (nb_couche >= 1000 && nb_couche < 10000)
+        u8g.setPrintPos(33, 27);
+         
+      char buf[5];
+      itoa(nb_couche, buf, 10);
+      lcd_print(buf);
+  
+    //Custom printScreen routine temps restant//////////////////////////////////////////////////////////////////////////////////////////
+      u8g.drawCircle(76, 9, 7); //cercle
+      u8g.drawBox(76,4,1,5); //grande aiguille
+      u8g.drawBox(77,9,3,1); //petite aiguille
+  
+      if (card.percentDone() != 0 && print_job_timer.duration() != 0) { //si impression a débuté (évite divison par 0)
+        char rbuffer[10];
+        duration_t remaining = ( ( 100-card.percentDone() )*( print_job_timer.duration()-130) )/card.percentDone(); //(130 = temps approx du bed leveling)
+        bool rhas_days = (remaining.value > 60*60*24L);
+        uint8_t rlen = remaining.toDigital(rbuffer, rhas_days);
+        u8g.setPrintPos(60, 27);
+        lcd_print(rbuffer);
+      }
+   }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Feedrate
   //
 
@@ -1061,7 +1116,6 @@ static void lcd_implementation_status_screen() {
         if (!isnan(ubl.z_values[x_plot][y_plot]))
           lcd_print(ftostr43sign(ubl.z_values[x_plot][y_plot]));
         else
-          lcd_printPGM(PSTR(" -----"));
       }
 
     }
