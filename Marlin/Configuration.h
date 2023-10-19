@@ -76,7 +76,7 @@
 // build by the user have been successfully uploaded into firmware.
 #define STRING_CONFIG_H_AUTHOR "Maxime D." // Who made the changes.
 #define SHOW_BOOTSCREEN
-#define STRING_SPLASH_LINE1 "Marlin 1.1.8" // will be shown during bootup in line 1
+#define STRING_SPLASH_LINE1 "Marlin 1.1.8.3" // will be shown during bootup in line 1
 #define STRING_SPLASH_LINE2 "Par Maxime D."         // will be shown during bootup in line 2
 
 //
@@ -828,7 +828,7 @@
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_INVERTING true // set to true to invert the logic of the sensor.
   #define ENDSTOPPULLUP_FIL_RUNOUT // Uncomment to use internal pullup for filament runout pins if the sensor is defined.
-  #define FILAMENT_RUNOUT_SCRIPT "M600 I-1 U5 V195 X195 Y195"
+  #define FILAMENT_RUNOUT_SCRIPT "M600"
 #endif
 
 //===========================================================================
