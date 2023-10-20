@@ -34,3 +34,9 @@
 #define MKS_BASE_VERSION 15
 
 #include "pins_MKS_BASE_common.h" // ... RAMPS
+
+#undef FIL_RUNOUT_PIN
+#define FIL_RUNOUT_PIN 19
+
+#undef SERVO0_PIN
+#define SERVO0_PIN 7
